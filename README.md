@@ -38,35 +38,35 @@ Docker в сравнении с вирутальными машинами про
 
 ### Описание команд Docker
 
-docker pull
+`docker pull`
 
-docker run -d (detach, запуск в автономном режиме) {id} (создание нового контейнера из образа) --name {name} -p {from:to} -e {name}={value}(env var) --net {name}
+`docker run -d` (detach, запуск в автономном режиме) {id} (создание нового контейнера из образа) --name {name} -p {from:to} -e {name}={value}(env var) --net {name}
 
 
-docker start {id} -  не работает с образами, а запускает имеющиюеся контейнеры
+`docker start {id}` -  не работает с образами, а запускает имеющиюеся контейнеры
  
-docker stop {id} - остановка имеющегося контейнера
+`docker stop {id}` - остановка имеющегося контейнера
 
-docker ps - все запущенные контейнеры
+`docker ps` - все запущенные контейнеры
 
-docker logs
+`docker logs` - логи контейнера
 
-docker exec -it
+`docker exec -it`
 
-docker ps -a все запущеные и не запущеные контейнеры
+`docker ps` -a все запущеные и не запущеные контейнеры
 
-docker run -p6000:6379 {image}
-docker run -p{from}:{to} {image}
+`docker run -p6000:6379 {image}`
+`docker run -p{from}:{to} {image}`
 
-docker images - показывает все ваши образы
+`docker images` - показывает все ваши образы
 
-docker network ls - обзор сетей
+`docker network ls` - выводит список сетей
 
-docker network create {name}
+`docker network create {name}` - создает новую сеть
 
-docker rmi {IMAGE}
+`docker rmi {IMAGE}` - удаляет образ
 
-docker rm {container}
+`docker rm {container}` - удаляет контейнер
 
 Container port vs HOST port
 
