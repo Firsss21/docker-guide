@@ -38,72 +38,88 @@ Docker в сравнении с вирутальными машинами про
 
 ### Описание команд Docker
 
-`docker pull`
+`docker pull {image}:{tag}` - скачивает необходимую версию образа
 
-`docker run -d` (detach, запуск в автономном режиме) {id} (создание нового контейнера из образа) --name {name} -p {from:to} -e {name}={value}(env var) --net {name}
+`docker run (-d запуск в автономном режиме) {id} (--name {name} имя для контейнера -p {from:to} проброс портов -e {name}={value} переменные --net {name} выбранная сеть -m {size} размер памяти) -v {name} подключение volume` - создание нового контейнера из образа
 
-
-`docker start {id}` -  не работает с образами, а запускает имеющиюеся контейнеры
+`docker start {id} (-a подключится к выводу)` -  запускает имеющийся контейнер **(не образ!)**
  
 `docker stop {id}` - остановка имеющегося контейнера
 
-`docker ps` - все запущенные контейнеры
+`docker ps (-a включить незапущенные, -l только последний запущенный, -q вывод только id, -s размер контейнера)` - выводит список всех запущенных контейнеров
 
-`docker logs` - логи контейнера
+`docker logs {id} (-f ожидает вывод лога, -t вывод со временем, -n ограничение кол-ва строк)` - выводит логи контейнера
 
-`docker exec -it`
-
-`docker ps` -a все запущеные и не запущеные контейнеры
-
-`docker run -p6000:6379 {image}`
-`docker run -p{from}:{to} {image}`
+`docker exec -it  {container} /bin/bash` - подключится к контейнеру как к терминалу
 
 `docker images` - показывает все ваши образы
 
 `docker network ls` - выводит список сетей
 
-`docker network create {name}` - создает новую сеть
+`docker network create {name} (-d драйвер)` - создает новую сеть
 
-`docker rmi {IMAGE}` - удаляет образ
+`docker network create/disconnect {id}` - подключает/отключает контейнера от сети
 
-`docker rm {container}` - удаляет контейнер
+`docker rmi {IMAGE} (-f принудительное удаление)` - удаляет образ
 
-Container port vs HOST port
+`docker rm {container} (-f принудительное удаление, -v вместе с volumes)` - удаляет контейнер
 
-Можно запускать несколько контейнеров на одном порту, но для этого нужно с хост-машины редиректить запросы через порт в нужный контейнер. Т.е. 10 контейнеров на 5000 порту, но на машине мы отправляем их в 5001/5000, 5002/5000, 5003/5000
+`docker rmi $(docker images -a -q)` - удаление всех образов
 
-Docker network
-создает свою изолированную сеть, в которой контейнеры могут общаться по названию контейнера
+`docker rm $(docker ps -a -f status=exited -q)` - удаление всех выключенных контейнеров
 
-docker-compose up 
-docker-compose down
-docker-compose start
-docker-compose stop
+`docker rmi $(docker images -a -q)` - удаление всех образов
 
-docker volumes:
-	host volume:
-		docker run -v {path host}:{path container}
-	anonymous volume:
-		docker run -v {path container}
-	name volume -- for production
-		docker run -v {name}:{path container}
+`docker stop $(docker ps -a -q)` - остановка всех запущенных контейнеров
 
-для того чтобы бд не забывала данные:
+`docker rm $(docker ps -a -q)` - удаление всех контейнеров
 
+### Container port и HOST port
+
+Можно запускать несколько контейнеров на одном порту, но для этого нужно с хост-машины редиректить запросы через порт в нужный контейнер.
+Например: 3 контейнера на 5000 порту, но с машины мы отправляем их с 5001 на 5000, 5002/5000, 5003/5000
+
+### Docker network
+
+Создает свою изолированную сеть, в которой контейнеры могут общаться по названию контейнера
+
+### Docker Compose
+
+`docker-compose up` - развёртывает сервисы веб-приложений и создаёт из docker-образа новые контейнеры, а также сети, тома и все конфигурации
+
+`docker-compose down` -  останавливает все сервисы, связанные с определённой конфигурацией Docker Compose. В отличие от команды stop, она также удаляет все контейнеры и внутренние сети, связанные с этими сервисами
+
+`docker-compose start` - запускает все остановленные сервисы в соответствии с параметрами остановленной конфигурации
+
+`docker-compose stop` - останавливает все сервисы. Она НЕ удаляет ни контейнеры, ни связанные с ними внутренние тома и сети
+
+### Docker volumes
+
+Есть три разных вида *volume*
+
++ host volume:	*docker run -v {path host}:{path container}* - с определенным путем на хост-машине
++ anonymous volume: *docker run -v {path container}* - с неопределенным путем на хост-машине
++ name volume: *docker run -v {name}:{path container}* - только с определенным именем на хост машине (рекомендованный к использованию)
+
+### Базовые пути данных "классических" баз данных
+
+```yml
 volumes: 
-	- mongo-data:/data/db
-	- mysql-data:/var/lib/mysql
-	- postgresql-data:/var/lib/postgresql
+   - mongo-data:/data/db
+   - mysql-data:/var/lib/mysql
+   - postgresql-data:/var/lib/postgresql
+```
+### Подключение volume в файле конфигурации
 
+```yml
+volumes:
+   mongo-data
+      driver: local
+```
 
-default mongo db path: /data/db
+### Базовый путь volumes в Docker
 
-	volumes:
-		mongo-data
-			driver: local
-
-default docker volumes path:
-	/var/lib/docker/volumes
+`/var/lib/docker/volumes`
 
 ### Docker tips
   
